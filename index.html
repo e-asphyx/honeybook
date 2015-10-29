@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Honeybook</title>
+
+	<script src="jquery-2.1.4.min.js"></script>
+	<script src="animation.js"></script>	
+  	<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div class="hexpage">
+<div class="hexpage-baserect">
+	<!--
+	R = 141.42%
+
+	rr: smaller radius (r) of smaller hexagons
+	rr = 8.1667%
+	RR = 9.43%
+	-->
+
+	<!-- Nodes -->
+	<li class="hexpage-node hexpage-mark" data-top="0" data-left="21.13" data-node-id="0"></li> <!-- 25*sqrt3/2 -->
+	<li class="hexpage-node hexpage-mark" data-top="0" data-left="78.87" data-node-id="1"></li>
+	<li class="hexpage-node hexpage-mark" data-top="50" data-left="-7.74" data-node-id="2"></li> <!-- 1/sqrt3 - 1/2 -->
+	<li class="hexpage-node hexpage-mark" data-top="50" data-left="107.74" data-node-id="3"></li>
+	<li class="hexpage-node hexpage-mark" data-top="100" data-left="21.13" data-node-id="4"></li>
+	<li class="hexpage-node hexpage-mark" data-top="100" data-left="78.87" data-node-id="5"></li>
+	<li class="hexpage-node hexagon-outer" data-top="9.17" data-left="35.86" data-node-id="6">
+		<div class="hexagon-inner">
+			<div class="hexagon-content">
+				Inner text
+			</div>
+		</div>
+	</li>
+	<li class="hexpage-node hexagon-outer" data-top="9.17" data-left="73.58" data-node-id="7"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node" data-top="17.33" data-left="21.71" data-node-id="8"></li>
+	<li class="hexpage-node hexagon-outer" data-top="25.5" data-left="17.0" data-node-id="9"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexagon-outer" data-top="25.5" data-left="45.29" data-node-id="10"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexagon-outer" data-top="25.5" data-left="64.15" data-node-id="11"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexpage-mark" data-top="33.67" data-left="87.72" data-node-id="12"></li>
+	<li class="hexpage-node hexagon-outer" data-top="41.83" data-left="7.56" data-node-id="13"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexpage-mark" data-top="50" data-left="31.14" data-node-id="14"></li>
+	<li class="hexpage-node hexagon-outer" data-top="50" data-left="78.28" data-node-id="15"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexpage-mark" data-top="58.17" data-left="17.0" data-node-id="16"></li>
+	<li class="hexpage-node hexpage-mark" data-top="66.33" data-left="50" data-node-id="17"></li>
+	<li class="hexpage-node hexagon-outer" data-top="66.33" data-left="87.72" data-node-id="18"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexagon-outer" data-top="74.5" data-left="17.0" data-node-id="19"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexagon-outer" data-top="74.5" data-left="64.15" data-node-id="20"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node hexpage-mark" data-top="82.67" data-left="50" data-node-id="21"></li>
+	<li class="hexpage-node hexagon-outer" data-top="90.83" data-left="73.58" data-node-id="22"><div class="hexagon-inner"></div></li>
+	<li class="hexpage-node" data-top="17.33" data-left="78.28" data-node-id="23"></li>
+
+	<!-- Links -->
+	<hr class="hexpage-link" data-from-node="0" data-to-node="1"/>
+	<hr class="hexpage-link" data-from-node="1" data-to-node="3"/>
+	<hr class="hexpage-link" data-from-node="3" data-to-node="5"/>
+	<hr class="hexpage-link" data-from-node="5" data-to-node="4"/>
+	<hr class="hexpage-link" data-from-node="4" data-to-node="2"/>
+	<hr class="hexpage-link" data-from-node="2" data-to-node="0"/>
+	<hr class="hexpage-link" data-from-node="0" data-to-node="7"/>
+	<hr class="hexpage-link" data-from-node="7" data-to-node="1"/>
+	<hr class="hexpage-link" data-from-node="6" data-to-node="1"/>
+	<hr class="hexpage-link" data-from-node="6" data-to-node="0"/>
+	<hr class="hexpage-link" data-from-node="6" data-to-node="11"/>
+	<hr class="hexpage-link" data-from-node="6" data-to-node="23"/>
+	<hr class="hexpage-link" data-from-node="7" data-to-node="11"/>
+	<hr class="hexpage-link" data-from-node="7" data-to-node="23"/>
+	<hr class="hexpage-link" data-from-node="1" data-to-node="10"/>
+	<hr class="hexpage-link" data-from-node="6" data-to-node="8"/>
+	<hr class="hexpage-link" data-from-node="0" data-to-node="8"/>
+	<hr class="hexpage-link" data-from-node="0" data-to-node="9"/>
+	<hr class="hexpage-link" data-from-node="8" data-to-node="10"/>
+	<hr class="hexpage-link" data-from-node="10" data-to-node="16"/>
+	<hr class="hexpage-link" data-from-node="10" data-to-node="14"/>
+	<hr class="hexpage-link" data-from-node="11" data-to-node="14"/>
+	<hr class="hexpage-link" data-from-node="8" data-to-node="14"/>
+	<hr class="hexpage-link" data-from-node="9" data-to-node="14"/>
+	<hr class="hexpage-link" data-from-node="9" data-to-node="13"/>
+	<hr class="hexpage-link" data-from-node="9" data-to-node="2"/>
+	<hr class="hexpage-link" data-from-node="9" data-to-node="16"/>
+	<hr class="hexpage-link" data-from-node="13" data-to-node="16"/>
+	<hr class="hexpage-link" data-from-node="2" data-to-node="16"/>
+	<hr class="hexpage-link" data-from-node="14" data-to-node="16"/>
+	<hr class="hexpage-link" data-from-node="11" data-to-node="17"/>
+	<hr class="hexpage-link" data-from-node="11" data-to-node="20"/>
+	<hr class="hexpage-link" data-from-node="10" data-to-node="20"/>
+	<hr class="hexpage-link" data-from-node="23" data-to-node="12"/>
+	<hr class="hexpage-link" data-from-node="23" data-to-node="3"/>
+	<hr class="hexpage-link" data-from-node="12" data-to-node="3"/>
+	<hr class="hexpage-link" data-from-node="11" data-to-node="12"/>
+	<hr class="hexpage-link" data-from-node="7" data-to-node="15"/>
+	<hr class="hexpage-link" data-from-node="12" data-to-node="15"/>
+	<hr class="hexpage-link" data-from-node="11" data-to-node="15"/>
+	<hr class="hexpage-link" data-from-node="12" data-to-node="18"/>
+	<hr class="hexpage-link" data-from-node="15" data-to-node="3"/>
+	<hr class="hexpage-link" data-from-node="15" data-to-node="17"/>
+	<hr class="hexpage-link" data-from-node="3" data-to-node="18"/>
+	<hr class="hexpage-link" data-from-node="3" data-to-node="20"/>
+	<hr class="hexpage-link" data-from-node="15" data-to-node="20"/>
+	<hr class="hexpage-link" data-from-node="15" data-to-node="22"/>
+	<hr class="hexpage-link" data-from-node="18" data-to-node="22"/>
+	<hr class="hexpage-link" data-from-node="18" data-to-node="5"/>
+	<hr class="hexpage-link" data-from-node="2" data-to-node="19"/>
+	<hr class="hexpage-link" data-from-node="16" data-to-node="19"/>
+	<hr class="hexpage-link" data-from-node="14" data-to-node="19"/>
+	<hr class="hexpage-link" data-from-node="14" data-to-node="4"/>
+	<hr class="hexpage-link" data-from-node="19" data-to-node="4"/>
+	<hr class="hexpage-link" data-from-node="13" data-to-node="2"/>
+	<hr class="hexpage-link" data-from-node="14" data-to-node="17"/>
+	<hr class="hexpage-link" data-from-node="14" data-to-node="21"/>
+	<hr class="hexpage-link" data-from-node="17" data-to-node="19"/>
+	<hr class="hexpage-link" data-from-node="17" data-to-node="21"/>
+	<hr class="hexpage-link" data-from-node="16" data-to-node="21"/>
+	<hr class="hexpage-link" data-from-node="20" data-to-node="21"/>
+	<hr class="hexpage-link" data-from-node="21" data-to-node="22"/>
+	<hr class="hexpage-link" data-from-node="19" data-to-node="5"/>
+	<hr class="hexpage-link" data-from-node="21" data-to-node="4"/>
+	<hr class="hexpage-link" data-from-node="22" data-to-node="4"/>
+	<hr class="hexpage-link" data-from-node="9" data-to-node="8"/>
+	<hr class="hexpage-link" data-from-node="5" data-to-node="22"/>
+	<hr class="hexpage-link" data-from-node="20" data-to-node="22"/>
+	<hr class="hexpage-link" data-from-node="10" data-to-node="11"/>
+	<hr class="hexpage-link" data-from-node="10" data-to-node="6"/>
+	<hr class="hexpage-link" data-from-node="15" data-to-node="18"/>
+</div>
+</div>
+</body>
+</html>
