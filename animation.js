@@ -293,7 +293,7 @@
 						clientX = e.originalEvent.changedTouches[i].clientX;
 						clientY = e.originalEvent.changedTouches[i].clientY;
 						found = true;
-						//break;
+						break;
 					}
 				}
 				if(!found) return;
