@@ -269,7 +269,7 @@
 
 		$(window).resize($.proxy(this.update, this));
 		this.el.on("mousedown", ".hexpage-node", $.proxy(this.mousedown, this));
-		this.el.on("mouseup", ".hexpage-node", $.proxy(this.mouseup, this));
+		this.el.on("mouseup", $.proxy(this.mouseup, this));
 		this.el.on("mousemove", $.proxy(this.mousemove, this));
 
 		this.update();
