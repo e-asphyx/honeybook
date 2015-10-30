@@ -90,7 +90,7 @@
 		};
 
 		this.move = function(x, y) {
-			if(x != this.pos.x || y != this.pos.y) {
+			if(!this.nailed && (x != this.pos.x || y != this.pos.y)) {
 				this.pos = {x: x, y: y};
 				this.update();
 			}
@@ -236,6 +236,10 @@
 		this.mousedown = function(e) {
 			if($(e.target).hasClass("hexagon-outer")) return;
 
+			var nodeId = parseInt($(e.currentTarget).data("node-id"));
+			var node = findNode(this.nodes, nodeId);
+			if(node.nailed) return;
+
 			var clientX, clientY;
 			if(e.type === "touchstart") {
 				if(this.touch >= 0) return;
@@ -253,9 +257,6 @@
 				clientY = e.clientY;
 			}
 			e.preventDefault();
-
-			var nodeId = parseInt($(e.currentTarget).data("node-id"));
-			var node = findNode(this.nodes, nodeId);
 
 			this.draggingNode = node;
 
