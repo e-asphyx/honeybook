@@ -61,6 +61,7 @@
 		this.el = $(elem);
 		this.parentEl = this.el.closest(".hexpage-baserect");
 		this.nodeId = parseInt(this.el.data("node-id"));
+		this.nailed = Boolean(this.el.data("nailed"));
 		this.page = page;
 		this.links = [];
 
@@ -103,7 +104,7 @@
 		};
 
 		this.calcForces = function() {
-			if(this.page.draggingNode === this) {
+			if(this.nailed || this.page.draggingNode === this) {
 				this.vel = {x: 0.0, y: 0.0};
 				this.newPos = this.pos;
 				return false;
