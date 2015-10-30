@@ -2,28 +2,23 @@
 	function Link(elem) {
 		this.el = $(elem);
 		
-		this.fromNode = parseInt(this.el.data("from-node"));
-		this.toNode = parseInt(this.el.data("to-node"));
+		this.fromNode = null;
+		this.toNode = null;
+
+		this.fromNodeId = parseInt(this.el.data("from-node"));
+		this.toNodeId = parseInt(this.el.data("to-node"));
 
 		this.parentEl = this.el.closest(".hexpage-baserect");
-		this.fromEl = this.parentEl.find(".hexpage-node[data-node-id='" + this.fromNode + "']");
-		this.toEl = this.parentEl.find(".hexpage-node[data-node-id='" + this.toNode + "']");
+		this.origin = null;
 
 		this.getCoordinates = function() {
-			var c = {
-				x0: parseFloat(this.fromEl.data("left")),
-				y0: parseFloat(this.fromEl.data("top")),
-				x1: parseFloat(this.toEl.data("left")),
-				y1: parseFloat(this.toEl.data("top"))
+			return {
+				x0: this.fromNode.pos.x,
+				y0: this.fromNode.pos.y,
+				x1: this.toNode.pos.x,
+				y1: this.toNode.pos.y
 			};
-
-			if(c.x0 === undefined || c.x1 === undefined  || c.y0 === undefined || c.y1 === undefined) {
-				console.log("Achtung");
-			}
-			return c;
 		};
-
-		this.origin = this.getCoordinates();
 
 		this.move = function(x0, y0, x1, y1) {
 			var dx = x1 - x0;
@@ -42,6 +37,17 @@
 			var c = this.getCoordinates();
 			this.move(c.x0, c.y0, c.x1, c.y1);
 		};
+
+		this.setFrom = function(from) {
+			this.fromNode = from;
+			if(this.fromNode && this.toNode) this.origin = this.getCoordinates();
+		};
+
+		this.setTo = function(to) {
+			this.toNode = to;
+			if(this.fromNode && this.toNode) this.origin = this.getCoordinates();
+		};
+
 	};
 
 	function Node(elem, page) {
@@ -64,18 +70,15 @@
 		this.vel = {x: 0.0, y: 0.0};
 
 		this.update = function() {
-			var x = parseFloat(this.el.data("left"));
-			var y = parseFloat(this.el.data("top"));
 			var w = this.parentEl.width();
 			var h = this.parentEl.height();
 
 			this.el.css("transform", "translate(-50%, -50%) " +
-				"translate(" + w * x / 100.0 + "px," + h * y / 100.0 + "px) rotate(0.001deg)");
+				"translate(" + w * this.pos.x / 100.0 + "px," + h * this.pos.y / 100.0 + "px) rotate(0.001deg)");
 		};
 
 		this.move = function(x, y) {
-			this.el.data("left", x);
-			this.el.data("top", y);
+			this.pos = {x: x, y: y};
 			this.update();
 
 			for(var i = 0; i < this.links.length; i++) {
@@ -85,13 +88,19 @@
 
 		this.addLinks = function(links) {
 			this.links = this.links.concat(links);
+			for(var i = 0; i < links.length; i++) {
+				if(links[i].fromNodeId == this.nodeId) {
+					links[i].setFrom(this);
+				} else if(links[i].toNodeId == this.nodeId) {
+					links[i].setTo(this);
+				}
+			}
 		};
 
 		this.calcForces = function() {
-			var pos = this.getPos();
 			if(this.page.draggingNode === this) {
 				this.vel = {x: 0.0, y: 0.0};
-				this.newPos = pos;
+				this.newPos = this.pos;
 				return false;
 			}
 
@@ -105,11 +114,7 @@
 				var ldx = lpos.x1 - lpos.x0 - link.origin.x1 + link.origin.x0;
 				var ldy = lpos.y1 - lpos.y0 - link.origin.y1 + link.origin.y0;
 
-				if(isNaN(ldx) || isNaN(ldy)) {
-					console.log(ldx, ldy);
-				}
-
-				if(link.fromNode == this.nodeId) {
+				if(link.fromNode == this) {
 					ldx = -ldx;
 					ldy = -ldy;
 				}
@@ -118,8 +123,8 @@
 			}
 
 			// "Anchor" link
-			dx += pos.x - this.originPos.x;
-			dy += pos.y - this.originPos.y;
+			dx += this.pos.x - this.originPos.x;
+			dy += this.pos.y - this.originPos.y;
 
 			this.vel.x -= dx * K;
 			this.vel.y -= dy * K;
@@ -129,13 +134,9 @@
 			this.vel.y *= Kfric;
 
 			this.newPos = {
-				x: pos.x + this.vel.x,
-				y: pos.y + this.vel.y
+				x: this.pos.x + this.vel.x,
+				y: this.pos.y + this.vel.y
 			};
-
-			if(this.newPos.x == NaN || this.newPos.y == NaN) {
-				console.log("Achtung");
-			}
 
 			if(Math.abs(this.newPos.x - this.originPos.x) < 0.01 &&
 					Math.abs(this.newPos.y - this.originPos.y) < 0.01) {
@@ -145,7 +146,7 @@
 
 			} else if(Math.abs(this.vel.x) < 0.002 && Math.abs(this.vel.y) < 0.002) {
 				this.vel = {x: 0.0, y: 0.0};
-				this.newPos = pos;
+				this.newPos = this.pos;
 				return false;
 			}
 			return true;
@@ -159,7 +160,7 @@
 	function findLinksByNode(links, nodeId) {
 		var linkArray = [];
 		for(var i = 0; i < links.length; i++) {
-			if(links[i].fromNode == nodeId || links[i].toNode == nodeId)
+			if(links[i].fromNodeId == nodeId || links[i].toNodeId == nodeId)
 				linkArray.push(links[i]);
 		}
 		return linkArray;
