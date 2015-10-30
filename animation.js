@@ -62,6 +62,10 @@
 		this.parentEl = this.el.closest(".hexpage-baserect");
 		this.nodeId = parseInt(this.el.data("node-id"));
 		this.nailed = Boolean(this.el.data("nailed"));
+		this.kmul = this.el.data("kmul");
+		if(this.kmul === undefined) {
+			this.kmul = 1.0;
+		}
 		this.page = page;
 		this.links = [];
 
@@ -129,8 +133,8 @@
 			dx += this.pos.x - this.originPos.x;
 			dy += this.pos.y - this.originPos.y;
 
-			this.vel.x -= dx * Phy.K;
-			this.vel.y -= dy * Phy.K;
+			this.vel.x -= dx * Phy.K * this.kmul;
+			this.vel.y -= dy * Phy.K * this.kmul;
 
 			// Attraction to pointer or touch point
 			if(this.page.pointerOffset) {
