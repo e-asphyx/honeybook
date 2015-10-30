@@ -259,6 +259,8 @@
         		x: clientX - rect.left - rect.width / 2,
         		y: clientY - rect.top - rect.height / 2
         	};
+
+			this.updateTimer();
 		};
 
 		this.mouseup = function(e) {
@@ -311,8 +313,8 @@
 			};
 
         	this.pointerOffset = {
-        		x: offset.x * 100/ rect.width,
-        		y: offset.y * 100/ rect.height
+        		x: offset.x * 100 / rect.width,
+        		y: offset.y * 100 / rect.height
         	};
 
 			if(this.draggingNode) {
@@ -325,6 +327,7 @@
 
 		this.mouseleave = function() {
 			this.pointerOffset = null;
+			this.updateTimer();
 		}
 
 		this.timerEvent = function() {
