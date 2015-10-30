@@ -209,7 +209,6 @@
 		};
 
 		this.mousedown = function(e) {
-			e.preventDefault();
 			if($(e.target).hasClass("hexagon-outer")) return;
 
 			var clientX, clientY;
@@ -222,6 +221,7 @@
 				clientX = e.clientX;
 				clientY = e.clientY;
 			}
+			e.preventDefault();
 
 			var nodeId = parseInt($(e.currentTarget).data("node-id"));
 			var node = findNode(this.nodes, nodeId);
@@ -254,7 +254,6 @@
 		};
 
 		this.mousemove = function(e) {
-			e.preventDefault();
 			if(!this.draggingNode) return;
 
 			var clientX, clientY;
@@ -280,6 +279,7 @@
 				clientX = e.clientX;
 				clientY = e.clientY;
 			}
+			e.preventDefault();
 
 			var rect = this.baseEl[0].getBoundingClientRect();
         	var offset = {
