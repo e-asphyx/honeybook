@@ -234,6 +234,7 @@
 
 			var clientX, clientY;
 			if(e.type === "touchstart") {
+				this.debug(e.originalEvent.changedTouches[0].identifier);
 				if(this.touch >= 0) return;
 				clientX = e.originalEvent.changedTouches[0].clientX;
 				clientY = e.originalEvent.changedTouches[0].clientY;
@@ -358,6 +359,10 @@
 			window.clearInterval(this.timer);
 			this.timer = null;
 		};
+
+		this.debug = function(txt) {
+			this.el.find(".hexpage-debug").text(txt);
+		}
 
 		$(window).resize($.proxy(this.update, this));
 		this.el.on("mousedown touchstart", ".hexpage-node", $.proxy(this.mousedown, this))
