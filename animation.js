@@ -1,4 +1,9 @@
 (function() {
+	var Phy = {
+		K: 0.02, // elasticity / mass: bigger value means more rigid netwok
+		Fric: 0.9 // smaller value means faster slowdown
+	};
+
 	function Link(elem) {
 		this.el = $(elem);
 		
@@ -78,11 +83,9 @@
 		};
 
 		this.move = function(x, y) {
-			this.pos = {x: x, y: y};
-			this.update();
-
-			for(var i = 0; i < this.links.length; i++) {
-				this.links[i].update();
+			if(x != this.pos.x || y != this.pos.y) {
+				this.pos = {x: x, y: y};
+				this.update();
 			}
 		};
 
@@ -105,9 +108,6 @@
 			}
 
 			var dx = 0.0, dy = 0.0;
-			var K = 0.02; // Elasticity / mass
-			var Kfric = 0.9;
-
 			for(var i = 0; i < this.links.length; i++) {
 				var link = this.links[i];
 				var lpos = link.getCoordinates();
@@ -126,12 +126,12 @@
 			dx += this.pos.x - this.originPos.x;
 			dy += this.pos.y - this.originPos.y;
 
-			this.vel.x -= dx * K;
-			this.vel.y -= dy * K;
+			this.vel.x -= dx * Phy.K;
+			this.vel.y -= dy * Phy.K;
 
 			// Friction
-			this.vel.x *= Kfric;
-			this.vel.y *= Kfric;
+			this.vel.x *= Phy.Fric;
+			this.vel.y *= Phy.Fric;
 
 			this.newPos = {
 				x: this.pos.x + this.vel.x,
@@ -231,6 +231,11 @@
 		this.mousemove = function(e) {
 			if(!this.draggingNode) return;
 
+			if(!e.buttons) {
+				this.mouseup();
+				return;
+			}
+
 			var rect = this.baseEl[0].getBoundingClientRect();
         	var offset = {
         		x: e.clientX - rect.left,
@@ -251,6 +256,10 @@
 			
 			for(i = 0; i < this.nodes.length; i++) {
 				this.nodes[i].advance();
+			}
+
+			for(var i = 0; i < this.links.length; i++) {
+				this.links[i].update();
 			}
 
 			if(!moved && this.timer) {
