@@ -2,21 +2,28 @@
 	function Link(elem) {
 		this.el = $(elem);
 		
-		this.fromNode = this.el.data("from-node");
-		this.toNode = this.el.data("to-node");
+		this.fromNode = parseInt(this.el.data("from-node"));
+		this.toNode = parseInt(this.el.data("to-node"));
 
 		this.parentEl = this.el.closest(".hexpage-baserect");
 		this.fromEl = this.parentEl.find(".hexpage-node[data-node-id='" + this.fromNode + "']");
 		this.toEl = this.parentEl.find(".hexpage-node[data-node-id='" + this.toNode + "']");
 
 		this.getCoordinates = function() {
-			return {
-				x0: this.fromEl.data("left"),
-				y0: this.fromEl.data("top"),
-				x1: this.toEl.data("left"),
-				y1: this.toEl.data("top")
+			var c = {
+				x0: parseFloat(this.fromEl.data("left")),
+				y0: parseFloat(this.fromEl.data("top")),
+				x1: parseFloat(this.toEl.data("left")),
+				y1: parseFloat(this.toEl.data("top"))
 			};
-		}
+
+			if(c.x0 === undefined || c.x1 === undefined  || c.y0 === undefined || c.y1 === undefined) {
+				console.log("Achtung");
+			}
+			return c;
+		};
+
+		this.origin = this.getCoordinates();
 
 		this.move = function(x0, y0, x1, y1) {
 			var dx = x1 - x0;
@@ -25,7 +32,6 @@
 			var phi = Math.atan2(dy, dx);
 			var w = this.parentEl.width();
 			var h = this.parentEl.height();
-			this.len = len;
 
 			this.el.css("transform-origin", "0 50%");
 			this.el.css("transform", "translateY(-50%) translate(" + w * x0 / 100.0 + "px," + h * y0 / 100.0 + "px)" +
@@ -36,24 +42,30 @@
 			var c = this.getCoordinates();
 			this.move(c.x0, c.y0, c.x1, c.y1);
 		};
-
-		var c = this.getCoordinates();
-		this.initialLen = Math.sqrt(Math.pow(c.x1 - c.x0, 2) + Math.pow(c.y1 - c.y0, 2));
-		this.len = this.initialLen;
 	};
 
-	function Node(elem) {
+	function Node(elem, page) {
 		this.el = $(elem);
 		this.parentEl = this.el.closest(".hexpage-baserect");
-		this.nodeId = this.el.data("node-id");
-		this.originX = this.el.data("left");
-		this.originY = this.el.data("top");
-
+		this.nodeId = parseInt(this.el.data("node-id"));
+		this.page = page;
 		this.links = [];
 
+		this.getPos = function() {
+			return {
+				x: parseFloat(this.el.data("left")),
+				y: parseFloat(this.el.data("top"))
+			};
+		};
+
+		this.originPos = this.getPos();
+		this.pos = this.originPos;
+		this.newPos = this.originPos;
+		this.vel = {x: 0.0, y: 0.0};
+
 		this.update = function() {
-			var x = this.el.data("left");
-			var y = this.el.data("top");
+			var x = parseFloat(this.el.data("left"));
+			var y = parseFloat(this.el.data("top"));
 			var w = this.parentEl.width();
 			var h = this.parentEl.height();
 
@@ -75,9 +87,73 @@
 			this.links = this.links.concat(links);
 		};
 
+		this.calcForces = function() {
+			var pos = this.getPos();
+			if(this.page.draggingNode === this) {
+				this.vel = {x: 0.0, y: 0.0};
+				this.newPos = pos;
+				return false;
+			}
+
+			var dx = 0.0, dy = 0.0;
+			var K = 0.02; // Elasticity / mass
+			var Kfric = 0.9;
+
+			for(var i = 0; i < this.links.length; i++) {
+				var link = this.links[i];
+				var lpos = link.getCoordinates();
+				var ldx = lpos.x1 - lpos.x0 - link.origin.x1 + link.origin.x0;
+				var ldy = lpos.y1 - lpos.y0 - link.origin.y1 + link.origin.y0;
+
+				if(isNaN(ldx) || isNaN(ldy)) {
+					console.log(ldx, ldy);
+				}
+
+				if(link.fromNode == this.nodeId) {
+					ldx = -ldx;
+					ldy = -ldy;
+				}
+				dx += ldx;
+				dy += ldy;
+			}
+
+			// "Anchor" link
+			dx += pos.x - this.originPos.x;
+			dy += pos.y - this.originPos.y;
+
+			this.vel.x -= dx * K;
+			this.vel.y -= dy * K;
+
+			// Friction
+			this.vel.x *= Kfric;
+			this.vel.y *= Kfric;
+
+			this.newPos = {
+				x: pos.x + this.vel.x,
+				y: pos.y + this.vel.y
+			};
+
+			if(this.newPos.x == NaN || this.newPos.y == NaN) {
+				console.log("Achtung");
+			}
+
+			if(Math.abs(this.newPos.x - this.originPos.x) < 0.01 &&
+					Math.abs(this.newPos.y - this.originPos.y) < 0.01) {
+				this.vel = {x: 0.0, y: 0.0};
+				this.newPos = this.originPos;
+				return false;
+
+			} else if(Math.abs(this.vel.x) < 0.002 && Math.abs(this.vel.y) < 0.002) {
+				this.vel = {x: 0.0, y: 0.0};
+				this.newPos = pos;
+				return false;
+			}
+			return true;
+		};
+
 		this.advance = function() {
-			// All physics here
-		}
+			this.move(this.newPos.x, this.newPos.y);
+		};
 	};
 
 	function findLinksByNode(links, nodeId) {
@@ -102,13 +178,15 @@
 		var nodes = this.el.find(".hexpage-node");
 		this.nodes = [];
 		for(var i = 0; i < nodes.length; i++) {
-			var newNode = new Node(nodes[i]);
+			var newNode = new Node(nodes[i], this);
 			newNode.addLinks(findLinksByNode(this.links, newNode.nodeId));
 			this.nodes.push(newNode);
 		}
 
 		this.draggingNode = null;
-		this.draggingOffset = {x:0, y:0};
+		this.draggingOffset = {x: 0, y: 0};
+		this.timer = null;
+		this.interval = 40;
 
 		this.update = function() {
 			var sz = Math.min($(window).height(), $(window).width()) * 0.95;
@@ -132,7 +210,7 @@
 			e.preventDefault();
 			if($(e.target).hasClass("hexagon-outer")) return;
 
-			var nodeId = $(e.currentTarget).data("node-id");
+			var nodeId = parseInt($(e.currentTarget).data("node-id"));
 			var node = findNode(this.nodes, nodeId);
 
 			this.draggingNode = node;
@@ -146,6 +224,7 @@
 
 		this.mouseup = function() {
 			this.draggingNode = null;
+			this.updateTimer();
 		};
 
 		this.mousemove = function(e) {
@@ -159,6 +238,32 @@
 
         	this.draggingNode.move((offset.x - this.draggingOffset.x) * 100/ rect.width,
         		(offset.y - this.draggingOffset.y) * 100 / rect.height);
+
+			this.updateTimer();
+		};
+
+		this.timerEvent = function() {
+			var moved = false;
+			for(var i = 0; i < this.nodes.length; i++) {
+				moved |= this.nodes[i].calcForces();
+			}
+			
+			for(i = 0; i < this.nodes.length; i++) {
+				this.nodes[i].advance();
+			}
+
+			if(!moved && this.timer) {
+				this.clearTimer();
+			}
+		};
+
+		this.updateTimer = function() {
+			if(!this.timer) this.timer = window.setInterval($.proxy(this.timerEvent, this), this.interval);
+		};
+
+		this.clearTimer = function() {
+			window.clearInterval(this.timer);
+			this.timer = null;
 		};
 
 		$(window).resize($.proxy(this.update, this));
