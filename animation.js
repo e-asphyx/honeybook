@@ -1,7 +1,8 @@
 (function() {
 	var Phy = {
 		K: 0.02, // elasticity / mass: bigger value means more rigid netwok
-		Fric: 0.9 // smaller value means faster slowdown
+		Fric: 0.9, // smaller value means faster slowdown
+		Interval: 40 // ms
 	};
 
 	function Link(elem) {
@@ -187,7 +188,7 @@
 		this.draggingNode = null;
 		this.draggingOffset = {x: 0, y: 0};
 		this.timer = null;
-		this.interval = 40;
+		this.touch = -1;
 
 		this.update = function() {
 			var sz = Math.min($(window).height(), $(window).width()) * 0.95;
@@ -211,6 +212,17 @@
 			e.preventDefault();
 			if($(e.target).hasClass("hexagon-outer")) return;
 
+			var clientX, clientY;
+			if(e.type === "touchstart") {
+				if(this.touch >= 0) return;
+				clientX = e.originalEvent.changedTouches[0].clientX;
+				clientY = e.originalEvent.changedTouches[0].clientY;
+				this.touch = e.originalEvent.changedTouches[0].identifier;
+			} else {
+				clientX = e.clientX;
+				clientY = e.clientY;
+			}
+
 			var nodeId = parseInt($(e.currentTarget).data("node-id"));
 			var node = findNode(this.nodes, nodeId);
 
@@ -218,28 +230,61 @@
 
         	var rect = e.currentTarget.getBoundingClientRect();
         	this.draggingOffset = {
-        		x: e.clientX - rect.left - rect.width / 2,
-        		y: e.clientY - rect.top - rect.height / 2
+        		x: clientX - rect.left - rect.width / 2,
+        		y: clientY - rect.top - rect.height / 2
         	};
 		};
 
-		this.mouseup = function() {
+		this.mouseup = function(e) {
+			if(e.type === "touchend" || e.type === "touchcancel") {
+				if(this.touch < 0) return;
+				var found = false;
+				for(var i = 0; i < e.originalEvent.changedTouches.length; i++) {
+					if(e.originalEvent.changedTouches[i].identifier == this.touch) {
+						found = true;
+						break;
+					}
+				}
+				if(!found) return;
+			}
+			
 			this.draggingNode = null;
+			this.touch = -1;
 			this.updateTimer();
 		};
 
 		this.mousemove = function(e) {
+			e.preventDefault();
 			if(!this.draggingNode) return;
 
-			if(!e.buttons) {
-				this.mouseup();
-				return;
+			var clientX, clientY;
+			if(e.type === "touchmove") {
+				if(this.touch < 0) return;
+
+				for(var i = 0; i < e.originalEvent.changedTouches.length; i++) {
+					if(e.originalEvent.changedTouches[i].identifier == this.touch) {
+						clientX = e.originalEvent.changedTouches[i].clientX;
+						clientY = e.originalEvent.changedTouches[i].clientY;
+						found = true;
+						break;
+					}
+				}
+				if(!found) return;
+			} else {
+				if(!e.buttons) {
+					this.draggingNode = null;
+					this.touch = -1;
+					this.updateTimer();
+					return;
+				}
+				clientX = e.clientX;
+				clientY = e.clientY;
 			}
 
 			var rect = this.baseEl[0].getBoundingClientRect();
         	var offset = {
-        		x: e.clientX - rect.left,
-        		y: e.clientY - rect.top
+        		x: clientX - rect.left,
+        		y: clientY - rect.top
         	};
 
         	this.draggingNode.move((offset.x - this.draggingOffset.x) * 100/ rect.width,
@@ -268,7 +313,7 @@
 		};
 
 		this.updateTimer = function() {
-			if(!this.timer) this.timer = window.setInterval($.proxy(this.timerEvent, this), this.interval);
+			if(!this.timer) this.timer = window.setInterval($.proxy(this.timerEvent, this), Phy.Interval);
 		};
 
 		this.clearTimer = function() {
@@ -277,9 +322,9 @@
 		};
 
 		$(window).resize($.proxy(this.update, this));
-		this.el.on("mousedown", ".hexpage-node", $.proxy(this.mousedown, this));
-		this.el.on("mouseup", $.proxy(this.mouseup, this));
-		this.el.on("mousemove", $.proxy(this.mousemove, this));
+		this.el.on("mousedown touchstart", ".hexpage-node", $.proxy(this.mousedown, this))
+			.on("mouseup touchend touchcancel", $.proxy(this.mouseup, this))
+			.on("mousemove touchmove", $.proxy(this.mousemove, this));
 
 		this.update();
 		this.el.css("visibility", "visible");
