@@ -8,12 +8,6 @@
 	box-sizing: border-box;
 }
 
-.hexpage-debug {
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-
 /* Acts as coordinate grid */
 .hexpage-baserect {
 	position: relative;

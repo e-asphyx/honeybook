@@ -234,8 +234,6 @@
 
 			var clientX, clientY;
 			if(e.type === "touchstart") {
-				this.debug(e.originalEvent.changedTouches[0].identifier);
-
 				if(this.touch >= 0) return;
 				clientX = e.originalEvent.changedTouches[0].clientX;
 				clientY = e.originalEvent.changedTouches[0].clientY;
@@ -290,9 +288,7 @@
 			if(e.type === "touchmove") {
 				if(this.touch < 0) return;
 				var found = false;
-				var txt = "";
 				for(var i = 0; i < e.originalEvent.changedTouches.length; i++) {
-					txt += e.originalEvent.changedTouches[i].identifier + " ";
 					if(e.originalEvent.changedTouches[i].identifier == this.touch) {
 						clientX = e.originalEvent.changedTouches[i].clientX;
 						clientY = e.originalEvent.changedTouches[i].clientY;
@@ -300,7 +296,6 @@
 						//break;
 					}
 				}
-				this.debug(txt);
 				if(!found) return;
 			} else {
 				if(!e.buttons) {
@@ -363,10 +358,6 @@
 			window.clearInterval(this.timer);
 			this.timer = null;
 		};
-
-		this.debug = function(txt) {
-			this.el.find(".hexpage-debug").text(txt);
-		}
 
 		$(window).resize($.proxy(this.update, this));
 		this.el.on("mousedown touchstart", ".hexpage-node", $.proxy(this.mousedown, this))
