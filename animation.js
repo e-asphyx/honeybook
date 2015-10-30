@@ -1,7 +1,7 @@
 (function() {
 	var Phy = {
 		K: 0.02, // elasticity / mass: bigger value means more rigid netwok
-		PointerK: 0.1, // Attraction to pointer
+		PointerK: 0.002, // "elasticity" of attraction to pointer
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
 	};
@@ -132,18 +132,16 @@
 			this.vel.y -= dy * Phy.K;
 
 			// Attraction to pointer or touch point
-			/*
 			if(this.page.pointerOffset) {
 				dx = this.pos.x - this.page.pointerOffset.x;
 				dy = this.pos.y - this.page.pointerOffset.y;
 
-				var l = Math.sqrt(dx * dx, dy * dy);
-				var alpha = 1 / Math.pow((l + 1), 20);
+				var l = Math.sqrt(dx * dx, dy * dy) / 100.0;
+				var alpha = 1 / Math.pow((l + 1), 2);
 
-				this.vel.x -= dx * alpha * Phy.K;
-				this.vel.y -= dy * alpha * Phy.K;
+				this.vel.x -= dx * alpha * Phy.PointerK;
+				this.vel.y -= dy * alpha * Phy.PointerK;
 			}
-			*/
 
 			// Friction
 			this.vel.x *= Phy.Fric;
@@ -205,6 +203,7 @@
 		this.timer = null;
 		this.touch = -1;
 		this.pointerOffset = null;
+		this.phy = Phy;
 
 		this.update = function() {
 			var sz;
