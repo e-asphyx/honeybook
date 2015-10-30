@@ -1,8 +1,9 @@
 (function() {
 	var Phy = {
 		K: 0.02, // elasticity / mass: bigger value means more rigid netwok
+		PointerK: 0.1, // Attraction to pointer
 		Fric: 0.9, // smaller value means faster slowdown
-		Interval: 40 // ms
+		Interval: 40, // ms
 	};
 
 	function Link(elem) {
@@ -130,6 +131,20 @@
 			this.vel.x -= dx * Phy.K;
 			this.vel.y -= dy * Phy.K;
 
+			// Attraction to pointer or touch point
+			/*
+			if(this.page.pointerOffset) {
+				dx = this.pos.x - this.page.pointerOffset.x;
+				dy = this.pos.y - this.page.pointerOffset.y;
+
+				var l = Math.sqrt(dx * dx, dy * dy);
+				var alpha = 1 / Math.pow((l + 1), 20);
+
+				this.vel.x -= dx * alpha * Phy.K;
+				this.vel.y -= dy * alpha * Phy.K;
+			}
+			*/
+
 			// Friction
 			this.vel.x *= Phy.Fric;
 			this.vel.y *= Phy.Fric;
@@ -189,9 +204,15 @@
 		this.draggingOffset = {x: 0, y: 0};
 		this.timer = null;
 		this.touch = -1;
+		this.pointerOffset = null;
 
 		this.update = function() {
-			var sz = Math.min($(window).height(), $(window).width()) * 0.95;
+			var sz;
+			if($(window).width() > $(window).height()) {
+				sz = $(window).height() * 0.95;
+			} else {
+				sz = $(window).width() * 0.95 * Math.sqrt(3) / 2;
+			}
 			this.baseEl.height(sz).width(sz);
 
 			for(var i = 0; i < this.nodes.length; i++) {
@@ -217,6 +238,12 @@
 				clientX = e.originalEvent.changedTouches[0].clientX;
 				clientY = e.originalEvent.changedTouches[0].clientY;
 				this.touch = e.originalEvent.changedTouches[0].identifier;
+
+				var baseRect = this.baseEl[0].getBoundingClientRect();
+        		this.pointerOffset = {
+        			x: (clientX - baseRect.left) * 100 / baseRect.width,
+        			y: (clientY - baseRect.top) * 100 / baseRect.height
+        		};
 			} else {
 				clientX = e.clientX;
 				clientY = e.clientY;
@@ -246,6 +273,7 @@
 					}
 				}
 				if(!found) return;
+				this.pointerOffset = null;
 			}
 			
 			this.draggingNode = null;
@@ -254,8 +282,6 @@
 		};
 
 		this.mousemove = function(e) {
-			if(!this.draggingNode) return;
-
 			var clientX, clientY;
 			if(e.type === "touchmove") {
 				if(this.touch < 0) return;
@@ -273,8 +299,6 @@
 				if(!e.buttons) {
 					this.draggingNode = null;
 					this.touch = -1;
-					this.updateTimer();
-					return;
 				}
 				clientX = e.clientX;
 				clientY = e.clientY;
@@ -282,16 +306,27 @@
 			e.preventDefault();
 
 			var rect = this.baseEl[0].getBoundingClientRect();
-        	var offset = {
-        		x: clientX - rect.left,
+			var offset = {
+				x: clientX - rect.left,
         		y: clientY - rect.top
+			};
+
+        	this.pointerOffset = {
+        		x: offset.x * 100/ rect.width,
+        		y: offset.y * 100/ rect.height
         	};
 
-        	this.draggingNode.move((offset.x - this.draggingOffset.x) * 100/ rect.width,
-        		(offset.y - this.draggingOffset.y) * 100 / rect.height);
+			if(this.draggingNode) {
+        		this.draggingNode.move((offset.x - this.draggingOffset.x) * 100/ rect.width,
+        			(offset.y - this.draggingOffset.y) * 100 / rect.height);
+        	}
 
 			this.updateTimer();
 		};
+
+		this.mouseleave = function() {
+			this.pointerOffset = null;
+		}
 
 		this.timerEvent = function() {
 			var moved = false;
@@ -324,7 +359,8 @@
 		$(window).resize($.proxy(this.update, this));
 		this.el.on("mousedown touchstart", ".hexpage-node", $.proxy(this.mousedown, this))
 			.on("mouseup touchend touchcancel", $.proxy(this.mouseup, this))
-			.on("mousemove touchmove", $.proxy(this.mousemove, this));
+			.on("mousemove touchmove", $.proxy(this.mousemove, this))
+			.on("mouseleave",  $.proxy(this.mouseleave, this));
 
 		this.update();
 		this.el.css("visibility", "visible");
