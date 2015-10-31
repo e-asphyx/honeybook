@@ -4,6 +4,7 @@
 		PointerK: 0.002, // "elasticity" of attraction to pointer
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
+		Anchors: true
 	};
 
 	function Link(elem) {
@@ -15,7 +16,7 @@
 		this.fromNodeId = parseInt(this.el.data("from-node"));
 		this.toNodeId = parseInt(this.el.data("to-node"));
 
-		this.parentEl = this.el.closest(".hexpage-baserect");
+		this.parentEl = this.el.closest(".hx-base");
 		this.origin = null;
 
 		this.getCoordinates = function() {
@@ -59,7 +60,7 @@
 
 	function Node(elem, page) {
 		this.el = $(elem);
-		this.parentEl = this.el.closest(".hexpage-baserect");
+		this.parentEl = this.el.closest(".hx-base");
 		this.nodeId = parseInt(this.el.data("node-id"));
 		this.nailed = Boolean(this.el.data("nailed"));
 		this.kmul = this.el.data("kmul");
@@ -93,6 +94,12 @@
 			if(!this.nailed && (x != this.pos.x || y != this.pos.y)) {
 				this.pos = {x: x, y: y};
 				this.update();
+
+				if(this.page.draggingNode === this) {
+					for(var i = 0; i < this.links.length; i++) {
+						this.links[i].update();
+					}
+				}
 			}
 		};
 
@@ -130,8 +137,10 @@
 			}
 
 			// "Anchor" link
-			dx += this.pos.x - this.originPos.x;
-			dy += this.pos.y - this.originPos.y;
+			if(Phy.Anchors) {
+				dx += this.pos.x - this.originPos.x;
+				dy += this.pos.y - this.originPos.y;
+			}
 
 			this.vel.x -= dx * Phy.K * this.kmul;
 			this.vel.y -= dy * Phy.K * this.kmul;
@@ -187,15 +196,15 @@
 
 	function Hexpage(elem) {
 		this.el = $(elem);
-		this.baseEl = this.el.find(".hexpage-baserect");
+		this.baseEl = this.el.find(".hx-base");
 
-		var links = this.el.find(".hexpage-link");
+		var links = this.el.find(".hx-link");
 		this.links = [];
 		for(i = 0; i < links.length; i++) {
 			this.links.push(new Link(links[i]));
 		}
 
-		var nodes = this.el.find(".hexpage-node");
+		var nodes = this.el.find(".hx-node");
 		this.nodes = [];
 		for(var i = 0; i < nodes.length; i++) {
 			var newNode = new Node(nodes[i], this);
@@ -234,7 +243,7 @@
 		};
 
 		this.mousedown = function(e) {
-			if($(e.target).hasClass("hexagon-outer")) return;
+			if($(e.target).hasClass("hx-outer")) return;
 
 			var nodeId = parseInt($(e.currentTarget).data("node-id"));
 			var node = findNode(this.nodes, nodeId);
@@ -365,7 +374,7 @@
 		};
 
 		$(window).resize($.proxy(this.update, this));
-		this.el.on("mousedown touchstart", ".hexpage-node", $.proxy(this.mousedown, this))
+		this.el.on("mousedown touchstart", ".hx-node", $.proxy(this.mousedown, this))
 			.on("mouseup touchend touchcancel", $.proxy(this.mouseup, this))
 			.on("mousemove touchmove", $.proxy(this.mousemove, this))
 			.on("mouseleave",  $.proxy(this.mouseleave, this));
@@ -375,6 +384,6 @@
 	};
 
 	$(document).ready(function() {
-		window.hexpage = new Hexpage($(".hexpage"));
+		window.hexpage = new Hexpage($(".hx-page"));
 	});
 })();

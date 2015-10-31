@@ -1,4 +1,4 @@
-.hexpage {
+.hx-page {
 	width: 100%;
 	background: white;
 	margin: 0;
@@ -9,7 +9,7 @@
 }
 
 /* Acts as coordinate grid */
-.hexpage-baserect {
+.hx-base {
 	position: relative;
 	background: none;
 	height: 700px; /* for compatibility */
@@ -22,14 +22,14 @@
 	margin: 0 auto;
 }
 
-.hexpage-node {
+.hx-node {
 	display: none;
 	top: 0;
 	left: 0;
 	z-index: +1;
 }
 
-.hexpage-mark {
+.hx-mark {
 	display: block;
 	position: absolute;
 	width: 12px;
@@ -40,7 +40,7 @@
 	margin: 0;
 }
 
-.hexpage-link {
+.hx-link {
 	display: block;
 	position: absolute;
 	top: 0;
@@ -52,33 +52,36 @@
 	background-color: #60605d;
 }
 
-.hexagon-outer {
+.hx-outer {
 	display: block;
 	position: absolute;
 	border: 0;
 	margin: 0;
-	width: 18.86%; /*19.8%*/
-	height: 16.33%;
 	overflow: hidden;
 	background: none;
+}
+
+.hx-small {
+	width: 18.86%;
+	height: 16.33%;
 	z-index: +2;
 }
 
-.hexagon-inner {
+.hx-inner {
 	display: block;
 	position: absolute;
 	border: 0;
 	margin: 0;
 	left: 50%;
 	top: 50%;
-	width: 122.47%; /*116.64%*/ /* R*tg(60deg)/cos(45deg) */
+	width: 122.47%; /* R*tg(60deg)/cos(45deg) */
 	height: 141.42%;
 	transform: translate(-50%, -50%) scaleX(0.5774) rotate(45deg); /* scale = R/h = 1/tg(60deg) */
-	background-color: #bfe1da;
+	background-color: #bfe0da;
 	overflow: hidden;
 }
 
-.hexagon-content {
+.hx-content {
 	display: block;
 	width: 100%;
 	height: 100%;
