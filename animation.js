@@ -4,7 +4,7 @@
 		PointerK: 0.002, // "elasticity" of attraction to pointer
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
-		Anchors: true
+		Anchors: false
 	};
 
 	function Link(elem) {

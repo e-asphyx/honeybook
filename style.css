@@ -77,7 +77,7 @@
 	width: 122.47%; /* R*tg(60deg)/cos(45deg) */
 	height: 141.42%;
 	transform: translate(-50%, -50%) scaleX(0.5774) rotate(45deg); /* scale = R/h = 1/tg(60deg) */
-	background-color: #bfe0da;
+	background-color: /*#bfe0da*/ #bbede9;
 	overflow: hidden;
 }
 
