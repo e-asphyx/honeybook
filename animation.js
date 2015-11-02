@@ -147,8 +147,9 @@
 				dy += this.pos.y - this.originPos.y;
 			}
 
-			this.vel.x -= dx * Phy.K * this.kmul;
-			this.vel.y -= dy * Phy.K * this.kmul;
+			var kmuladd = this.page.running ? 1.0 : 4.0;
+			this.vel.x -= dx * Phy.K * this.kmul * kmuladd;
+			this.vel.y -= dy * Phy.K * this.kmul * kmuladd;
 
 			// Attraction to pointer or touch point
 			if(this.page.pointerOffset) {
@@ -163,8 +164,9 @@
 			}
 
 			// Friction
-			this.vel.x *= Phy.Fric;
-			this.vel.y *= Phy.Fric;
+			var fricadd = this.page.running ? 1.0 : 0.5;
+			this.vel.x *= Phy.Fric * fricadd;
+			this.vel.y *= Phy.Fric * fricadd;
 
 			this.newPos = {
 				x: this.pos.x + this.vel.x,
