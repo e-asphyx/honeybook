@@ -5,7 +5,7 @@
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
 		Anchors: false,
-		WheelDelta: 80 //px
+		WheelTimeDelta: 500 // ms
 	};
 
 	function Link(elem) {
@@ -263,10 +263,10 @@
 				this.touch = e.originalEvent.changedTouches[0].identifier;
 
 				var baseRect = this.baseEl[0].getBoundingClientRect();
-        		this.pointerOffset = {
-        			x: (clientX - baseRect.left) * 100 / baseRect.width,
-        			y: (clientY - baseRect.top) * 100 / baseRect.height
-        		};
+				this.pointerOffset = {
+					x: (clientX - baseRect.left) * 100 / baseRect.width,
+					y: (clientY - baseRect.top) * 100 / baseRect.height
+				};
 			} else {
 				clientX = e.clientX;
 				clientY = e.clientY;
@@ -275,11 +275,11 @@
 
 			this.draggingNode = node;
 
-        	var rect = e.currentTarget.getBoundingClientRect();
-        	this.draggingOffset = {
-        		x: clientX - rect.left - rect.width / 2,
-        		y: clientY - rect.top - rect.height / 2
-        	};
+			var rect = e.currentTarget.getBoundingClientRect();
+			this.draggingOffset = {
+				x: clientX - rect.left - rect.width / 2,
+				y: clientY - rect.top - rect.height / 2
+			};
 
 			this.updateTimer();
 		};
@@ -330,18 +330,18 @@
 			var rect = this.baseEl[0].getBoundingClientRect();
 			var offset = {
 				x: clientX - rect.left,
-        		y: clientY - rect.top
+				y: clientY - rect.top
 			};
 
-        	this.pointerOffset = {
-        		x: offset.x * 100 / rect.width,
-        		y: offset.y * 100 / rect.height
-        	};
+			this.pointerOffset = {
+				x: offset.x * 100 / rect.width,
+				y: offset.y * 100 / rect.height
+			};
 
 			if(this.draggingNode) {
-        		this.draggingNode.move((offset.x - this.draggingOffset.x) * 100/ rect.width,
-        			(offset.y - this.draggingOffset.y) * 100 / rect.height);
-        	}
+				this.draggingNode.move((offset.x - this.draggingOffset.x) * 100/ rect.width,
+					(offset.y - this.draggingOffset.y) * 100 / rect.height);
+			}
 
 			this.updateTimer();
 		};
@@ -351,13 +351,14 @@
 			this.updateTimer();
 		};
 
-		this.wheelDelta = 0;
-		this.wheelPrevDelta = 0;
+		this.wheelTimeStamp = 0;
+		this.scrollTimeStamp = 0;
+		this.scrollBuffer = [];
 
-		this.slideChange = function(step) {
-			if(this.slide + step < 0 || this.slide + step > 5) return;
+		this.scroll = function(dir) {
+			var step = dir === "down" ? 1 : -1;
+			if(this.slide + step < 0 || this.slide + step > 3) return;
 			this.slide += step;
-			console.log(this.slide);
 			switch(this.slide) {
 				case 0:
 					this.el.find(".hx-net").addClass("collapsed");
@@ -380,7 +381,7 @@
 					this.start();
 				break;
 
-				case 4:
+				case 3:
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").removeClass("collapsed");
@@ -388,22 +389,36 @@
 			}
 		};
 
-		this.wheel = function(e) {
-			var delta = e.originalEvent.deltaY;
-			if((delta > 0 && this.wheelPrevDelta < 0) ||
-				(delta < 0 && this.wheelPrevDelta > 0)) {
-				this.wheelDelta = 0;
+		function getAverage(elements, number) {
+			var sum = 0;
+			var num = Math.min(elements.length, number);
+			for(var i = elements.length - num; i < elements.length; i++) {
+				sum += elements[i];
 			}
-			this.wheelPrevDelta = delta;
+			return sum / num;
+		}
 
-			this.wheelDelta += delta;
-			while(this.wheelDelta >= Phy.WheelDelta) {
-				this.slideChange(1);
-				this.wheelDelta -= Phy.WheelDelta;
+		this.wheel = function(e) {
+			e.preventDefault();
+			var delta = e.originalEvent.deltaY;
+
+			if(this.scrollBuffer > 149) {
+				this.scrollBuffer.shift();
 			}
-			while(this.wheelDelta <= -Phy.WheelDelta) {
-				this.slideChange(-1);
-				this.wheelDelta += Phy.WheelDelta;
+			this.scrollBuffer.push(Math.abs(delta));
+
+			var ts = e.timeStamp;
+			if(ts - this.wheelTimeStamp > Phy.WheelTimeDelta) {
+				this.scrollBuffer = [];
+			}
+			this.wheelTimeStamp = ts;
+
+			if(ts - this.scrollTimeStamp > Phy.WheelTimeDelta) {
+				var accel = getAverage(this.scrollBuffer, 10) >= getAverage(this.scrollBuffer, 70);
+				if(accel) {
+					this.scrollTimeStamp = ts;
+					this.scroll(delta < 0 ? "up" : "down");
+				}
 			}
 		};
 

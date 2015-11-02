@@ -33,12 +33,15 @@
 	top: 50%;
 	left: 50%;
 	background: none;
-	z-index: +1;
-	transition: transform 1s;
+	z-index: +2;
+	visibility: visible;
+	transition: transform 1s, visibility 1s;
 	transform: translate(-50%, -50%);
 }
 
 .hx-net.collapsed {
+	visibility: hidden;
+	transition: transform 1s, visibility 1s;
 	transform: translate(-50%, -50%) scale(0.1, 0.1);
 }
 
@@ -93,8 +96,9 @@
 	margin: 0;
 	overflow: hidden;
 	background: none;
+	visibility: visible;
 	transform: translate(-50%, -50%);
-	transition: width 1s, height 1s;
+	transition: width 1s, height 1s, visibility 1s;
 }
 
 .hx-block.small {
@@ -110,7 +114,9 @@
 
 .hx-block.collapsed {
 	height: 0;
-	width: 0;	
+	width: 0;
+	visibility: hidden;
+	transition: width 1s, height 1s, visibility 1s;
 }
 
 .hx-inner {
@@ -167,8 +173,4 @@
 	font-size: 20px;
 	transform: rotate(-45deg) scaleX(1.7321);
 	box-sizing: border-box;
-}
-
-.hx-hidden {
-	display: none;
 }
