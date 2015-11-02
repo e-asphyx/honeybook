@@ -4,7 +4,8 @@
 		PointerK: 0.002, // "elasticity" of attraction to pointer
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
-		Anchors: false
+		Anchors: false,
+		WheelDelta: 80 //px
 	};
 
 	function Link(elem) {
@@ -56,7 +57,7 @@
 			if(this.fromNode && this.toNode) this.origin = this.getCoordinates();
 		};
 
-	};
+	}
 
 	function Node(elem, page) {
 		this.el = $(elem);
@@ -101,6 +102,10 @@
 					}
 				}
 			}
+		};
+
+		this.reset = function() {
+			this.move(this.originPos.x, this.originPos.y);
 		};
 
 		this.addLinks = function(links) {
@@ -166,15 +171,14 @@
 				y: this.pos.y + this.vel.y
 			};
 
-			if(Math.abs(this.newPos.x - this.originPos.x) < 0.01 &&
+			if(Math.abs(this.vel.x) < 0.002 && Math.abs(this.vel.y) < 0.002) {
+				if(Math.abs(this.newPos.x - this.originPos.x) < 0.01 &&
 					Math.abs(this.newPos.y - this.originPos.y) < 0.01) {
+					this.newPos = this.originPos;
+				} else {
+					this.newPos = this.pos;
+				}
 				this.vel = {x: 0.0, y: 0.0};
-				this.newPos = this.originPos;
-				return false;
-
-			} else if(Math.abs(this.vel.x) < 0.002 && Math.abs(this.vel.y) < 0.002) {
-				this.vel = {x: 0.0, y: 0.0};
-				this.newPos = this.pos;
 				return false;
 			}
 			return true;
@@ -183,7 +187,7 @@
 		this.advance = function() {
 			this.move(this.newPos.x, this.newPos.y);
 		};
-	};
+	}
 
 	function findLinksByNode(links, nodeId) {
 		var linkArray = [];
@@ -195,6 +199,7 @@
 	}
 
 	function Hexpage(elem) {
+		this.running = false;
 		this.el = $(elem);
 		this.baseEl = this.el.find(".hx-base");
 
@@ -218,6 +223,7 @@
 		this.touch = -1;
 		this.pointerOffset = null;
 		this.phy = Phy;
+		this.slide = 0;
 
 		this.update = function() {
 			var sz;
@@ -240,10 +246,10 @@
 			for(var i = 0; i < nodes.length; i++) {
 				if(nodes[i].nodeId == nodeId) return nodes[i];
 			}
-		};
+		}
 
 		this.mousedown = function(e) {
-			if($(e.target).hasClass("hx-outer")) return;
+			if($(e.target).hasClass("hx-block")) return;
 
 			var nodeId = parseInt($(e.currentTarget).data("node-id"));
 			var node = findNode(this.nodes, nodeId);
@@ -343,7 +349,63 @@
 		this.mouseleave = function() {
 			this.pointerOffset = null;
 			this.updateTimer();
-		}
+		};
+
+		this.wheelDelta = 0;
+		this.wheelPrevDelta = 0;
+
+		this.slideChange = function(step) {
+			if(this.slide + step < 0 || this.slide + step > 5) return;
+			this.slide += step;
+			console.log(this.slide);
+			switch(this.slide) {
+				case 0:
+					this.el.find(".hx-net").addClass("collapsed");
+					this.el.find(".hx-block.small").addClass("collapsed");
+					this.el.find(".hx-block.big").addClass("collapsed");
+					this.stop();
+				break;
+
+				case 1:
+					this.el.find(".hx-net").addClass("collapsed");
+					this.el.find(".hx-block.small").removeClass("collapsed");
+					this.el.find(".hx-block.big").addClass("collapsed");
+					this.stop();
+				break;
+
+				case 2:
+					this.el.find(".hx-net").removeClass("collapsed");
+					this.el.find(".hx-block.small").removeClass("collapsed");
+					this.el.find(".hx-block.big").addClass("collapsed");
+					this.start();
+				break;
+
+				case 4:
+					this.el.find(".hx-net").removeClass("collapsed");
+					this.el.find(".hx-block.small").removeClass("collapsed");
+					this.el.find(".hx-block.big").removeClass("collapsed");
+					this.start();
+			}
+		};
+
+		this.wheel = function(e) {
+			var delta = e.originalEvent.deltaY;
+			if((delta > 0 && this.wheelPrevDelta < 0) ||
+				(delta < 0 && this.wheelPrevDelta > 0)) {
+				this.wheelDelta = 0;
+			}
+			this.wheelPrevDelta = delta;
+
+			this.wheelDelta += delta;
+			while(this.wheelDelta >= Phy.WheelDelta) {
+				this.slideChange(1);
+				this.wheelDelta -= Phy.WheelDelta;
+			}
+			while(this.wheelDelta <= -Phy.WheelDelta) {
+				this.slideChange(-1);
+				this.wheelDelta += Phy.WheelDelta;
+			}
+		};
 
 		this.timerEvent = function() {
 			var moved = false;
@@ -355,7 +417,7 @@
 				this.nodes[i].advance();
 			}
 
-			for(var i = 0; i < this.links.length; i++) {
+			for(i = 0; i < this.links.length; i++) {
 				this.links[i].update();
 			}
 
@@ -373,15 +435,35 @@
 			this.timer = null;
 		};
 
+		this.stop = function() {
+			if(!this.running) return;
+			this.running = false;
+			this.el.off("mousedown touchstart", ".hx-node")
+				.off("mouseup touchend touchcancel")
+				.off("mousemove touchmove")
+				.off("mouseleave");
+
+			this.draggingNode = null;
+			this.pointerOffset = null;
+			this.updateTimer();
+		};
+
+		this.start = function() {
+			if(this.running) return;
+			this.running = true;
+			this.el.on("mousedown touchstart", ".hx-node", $.proxy(this.mousedown, this))
+				.on("mouseup touchend touchcancel", $.proxy(this.mouseup, this))
+				.on("mousemove touchmove", $.proxy(this.mousemove, this))
+				.on("mouseleave",  $.proxy(this.mouseleave, this));
+			this.update();
+		};
+
 		$(window).resize($.proxy(this.update, this));
-		this.el.on("mousedown touchstart", ".hx-node", $.proxy(this.mousedown, this))
-			.on("mouseup touchend touchcancel", $.proxy(this.mouseup, this))
-			.on("mousemove touchmove", $.proxy(this.mousemove, this))
-			.on("mouseleave",  $.proxy(this.mouseleave, this));
+		$(window).on("wheel", $.proxy(this.wheel, this));
 
 		this.update();
 		this.el.css("visibility", "visible");
-	};
+	}
 
 	$(document).ready(function() {
 		window.hexpage = new Hexpage($(".hx-page"));
