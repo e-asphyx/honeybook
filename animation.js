@@ -229,12 +229,16 @@
 
 		this.update = function() {
 			var sz;
+			var vmin;
 			if($(window).width() > $(window).height()) {
-				sz = $(window).height() * 0.95;
+				vmin = $(window).height();
+				sz = vmin * 0.95;
 			} else {
-				sz = $(window).width() * 0.95 * Math.sqrt(3) / 2;
+				vmin = $(window).width();
+				sz = vmin * 0.95 * Math.sqrt(3) / 2;
 			}
 			this.baseEl.height(sz).width(sz);
+			this.el.css("font-size", vmin * 0.05 + "px");
 
 			for(var i = 0; i < this.nodes.length; i++) {
 				this.nodes[i].update();
@@ -355,34 +359,46 @@
 
 		this.scroll = function(dir) {
 			var step = dir === "down" ? 1 : -1;
-			if(this.slide + step < 0 || this.slide + step > 3) return;
+			if(this.slide + step < 0 || this.slide + step > 4) return;
 			this.slide += step;
 			switch(this.slide) {
 				case 0:
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").addClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
+					this.el.find(".hx-slide-wrapper").removeClass("slide-1");
 					this.stop();
-				break;
+					break;
 
 				case 1:
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
+					this.el.find(".hx-slide-wrapper").removeClass("slide-1");
 					this.stop();
-				break;
+					break;
 
 				case 2:
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
+					this.el.find(".hx-slide-wrapper").removeClass("slide-1");
 					this.start();
-				break;
+					break;
 
 				case 3:
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
+					this.el.find(".hx-block.big").addClass("collapsed");
+					this.el.find(".hx-slide-wrapper").addClass("slide-1");
+					this.start();
+					break;
+
+				case 4:
+					this.el.find(".hx-net").removeClass("collapsed");
+					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").removeClass("collapsed");
+					this.el.find(".hx-slide-wrapper").addClass("slide-1");
 					this.start();
 			}
 		};
@@ -412,7 +428,7 @@
 			var dd = tmpBuf[Math.floor(this.filterBuf.length / 2)];
 			this.prevDelta = delta;
 			
-			if(dd > 0 || (dd == 0 && getAvg(this.filterBuf) > 0)) {
+			if(dd > 0 || (dd === 0 && getAvg(this.filterBuf) > 0)) {
 				if(e.timeStamp - this.wheelTimeStamp > Phy.WheelTimeDelta) {
 					this.filterBuf = [];
 					this.prevDelta = 0;

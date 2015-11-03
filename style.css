@@ -6,6 +6,9 @@
 	overflow: hidden;
 	padding: 15px 0;
 	box-sizing: border-box;
+	font-family: "ProximaNova", sans-serif;
+	font-weight: normal;
+	font-size: 5vmin;
 }
 
 /* Acts as coordinate grid */
@@ -59,13 +62,13 @@
 	border-style: none;
 	border-radius: 50%;
 	margin: 0;
-	background-color: rgba(96, 96, 93, 1);
+	background-color: rgba(102, 102, 103, 1);
 	z-index: +3;
 	transition: background-color 1s ease-out;
 }
 
 .hx-net.collapsed .hx-mark {
-	background-color: rgba(96, 96, 93, 0);
+	background-color: rgba(102, 102, 103, 0);
 	transition: background-color 1s ease-in;
 }
 
@@ -99,6 +102,7 @@
 	visibility: visible;
 	transform: translate(-50%, -50%);
 	transition: visibility 1s;
+	cursor: default;
 }
 
 .hx-block.small {
@@ -189,7 +193,6 @@
 	border: 0;
 	margin: 0;
 	padding: 0;
-	font-size: 20px;
 	transform: rotate(-45deg) scaleX(1.7321);
 	box-sizing: border-box;
 	background: none;
@@ -202,11 +205,11 @@
 	left: 0;
 	width: 100%;
 	height: 200%;
-	transition: top 1s;
+	transition: transform 1s;
 }
 
 .hx-slide-wrapper.slide-1 {
-	top: -100%;
+	transform: translateY(-50%);
 }
 
 .hx-slide {
@@ -214,6 +217,8 @@
 	display: block;
 	width: 100%;
 	height: 50%;
+	font-size: 0.35em;
+	color: #666667;
 }
 
 .hx-slide [class *= "hx-icon-"] {
@@ -272,4 +277,28 @@
 
 .hx-slide .hx-icon-10 {
 	background-position: 100% 0;
+}
+
+.hx-slide h3, .hx-slide p {
+	text-align: center;
+	font-size: 1em;
+	text-align: center;
+}
+
+.hx-slide h3 {
+	margin: 0 0 -1.55% 0;
+	font-weight: bold;
+	padding-top: 22%;
+}
+
+.hx-slide h2 {
+	text-align: center;
+	font-size: 3em;
+	font-family: "PFDinTextCondPro", sans-serif;
+	font-weight: bold;
+	margin: 0 0 -9% 0;
+}
+
+.hx-slide p {
+	margin: 0 0 -1% 0;
 }
