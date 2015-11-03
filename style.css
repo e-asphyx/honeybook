@@ -293,17 +293,12 @@
 .hx-slide h3 {
 	font-weight: bold;
 	padding-top: 22%;
-	margin-bottom: 0;
 }
 
 .hx-slide h2 {
 	font-size: 3em;
 	font-family: "PFDinTextCondPro", sans-serif;
 	font-weight: bold;
-	line-height: 119%;
-	/*margin-bottom: -9%;*/
-}
-
-.hx-slide p {
-	margin-bottom: 0;
+	line-height: 120%;
+	margin-bottom: -7%;
 }
