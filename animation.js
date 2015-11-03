@@ -391,6 +391,14 @@
 		this.prevDelta = 0;
 		this.filterBuf = [];
 
+		function getAvg(array) {
+			var sum = 0;
+			for(var i = 0; i < array.length; i++) {
+				sum += array[i];
+			}
+			return sum / array.length;
+		}
+
 		this.wheel = function(e) {
 			e.preventDefault();
 			if(Math.abs(e.originalEvent.deltaY) <= Math.abs(e.originalEvent.deltaX)) return;
@@ -403,7 +411,8 @@
 			tmpBuf.sort();
 			var dd = tmpBuf[Math.floor(this.filterBuf.length / 2)];
 			this.prevDelta = delta;
-			if(dd > 0) {
+			
+			if(dd > 0 || (dd == 0 && getAvg(this.filterBuf) > 0)) {
 				if(e.timeStamp - this.wheelTimeStamp > Phy.WheelTimeDelta) {
 					this.filterBuf = [];
 					this.prevDelta = 0;
