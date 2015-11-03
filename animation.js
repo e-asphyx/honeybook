@@ -406,6 +406,7 @@
 			if(dd > 0) {
 				if(e.timeStamp - this.wheelTimeStamp > Phy.WheelTimeDelta) {
 					this.filterBuf = [];
+					this.prevDelta = 0;
 					this.wheelTimeStamp = e.timeStamp;
 					this.scroll(delta < 0 ? "up" : "down");
 				}
