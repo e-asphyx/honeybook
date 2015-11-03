@@ -1,0 +1,17 @@
+@font-face {
+	font-family: ProximaNova;
+	src: url("Proxima Nova Bold.otf");
+	font-weight: bold;
+}
+
+@font-face {
+	font-family: ProximaNova;
+	src: url("ProximaNova-Regular.otf");
+	font-weight: normal;
+}
+
+@font-face {
+	font-family: PFDinTextCondPro;
+	src: url("PFDinTextCondPro-Bold.ttf");
+	font-weight: bold;
+}
