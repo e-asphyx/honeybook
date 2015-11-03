@@ -9,6 +9,7 @@
 	font-family: "ProximaNova", sans-serif;
 	font-weight: normal;
 	font-size: 5vmin;
+	text-rendering: geometricPrecision;
 }
 
 /* Acts as coordinate grid */
@@ -279,26 +280,30 @@
 	background-position: 100% 0;
 }
 
+.hx-slide h3, .hx-slide h2, .hx-slide p {
+	margin: 0;
+	text-align: center;
+}
+
 .hx-slide h3, .hx-slide p {
-	text-align: center;
 	font-size: 1em;
-	text-align: center;
+	line-height: 106.25%;
 }
 
 .hx-slide h3 {
-	margin: 0 0 -1.55% 0;
 	font-weight: bold;
 	padding-top: 22%;
+	margin-bottom: 0;
 }
 
 .hx-slide h2 {
-	text-align: center;
 	font-size: 3em;
 	font-family: "PFDinTextCondPro", sans-serif;
 	font-weight: bold;
-	margin: 0 0 -9% 0;
+	line-height: 119%;
+	/*margin-bottom: -9%;*/
 }
 
 .hx-slide p {
-	margin: 0 0 -1% 0;
+	margin-bottom: 0;
 }
