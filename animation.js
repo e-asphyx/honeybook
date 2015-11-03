@@ -5,7 +5,7 @@
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
 		Anchors: false,
-		WheelTimeDelta: 500 // ms
+		WheelTimeDelta: 300 // ms
 	};
 
 	function Link(elem) {
@@ -353,10 +353,6 @@
 			this.updateTimer();
 		};
 
-		this.wheelTimeStamp = 0;
-		this.scrollTimeStamp = 0;
-		this.scrollBuffer = [];
-
 		this.scroll = function(dir) {
 			var step = dir === "down" ? 1 : -1;
 			if(this.slide + step < 0 || this.slide + step > 3) return;
@@ -391,34 +387,26 @@
 			}
 		};
 
-		function getAverage(elements, number) {
-			var sum = 0;
-			var num = Math.min(elements.length, number);
-			for(var i = elements.length - num; i < elements.length; i++) {
-				sum += elements[i];
-			}
-			return sum / num;
-		}
+		this.wheelTimeStamp = 0;
+		this.prevDelta = 0;
+		this.filterBuf = [];
 
 		this.wheel = function(e) {
 			e.preventDefault();
+			if(Math.abs(e.originalEvent.deltaY) <= Math.abs(e.originalEvent.deltaX)) return;
 			var delta = e.originalEvent.deltaY;
-
-			if(this.scrollBuffer > 149) {
-				this.scrollBuffer.shift();
+			if(this.filterBuf.length == 15) {
+				this.filterBuf.shift();
 			}
-			this.scrollBuffer.push(Math.abs(delta));
-
-			var ts = e.timeStamp;
-			if(ts - this.wheelTimeStamp > Phy.WheelTimeDelta) {
-				this.scrollBuffer = [];
-			}
-			this.wheelTimeStamp = ts;
-
-			if(ts - this.scrollTimeStamp > Phy.WheelTimeDelta) {
-				var accel = getAverage(this.scrollBuffer, 10) >= getAverage(this.scrollBuffer, 70);
-				if(accel) {
-					this.scrollTimeStamp = ts;
+			this.filterBuf.push(Math.abs(delta) - Math.abs(this.prevDelta));
+			var tmpBuf = this.filterBuf.slice();
+			tmpBuf.sort();
+			var dd = tmpBuf[Math.floor(this.filterBuf.length / 2)];
+			this.prevDelta = delta;
+			if(dd > 0) {
+				if(e.timeStamp - this.wheelTimeStamp > Phy.WheelTimeDelta) {
+					this.filterBuf = [];
+					this.wheelTimeStamp = e.timeStamp;
 					this.scroll(delta < 0 ? "up" : "down");
 				}
 			}
