@@ -39,12 +39,12 @@
 	background: none;
 	z-index: +2;
 	visibility: visible;
-	transition: transform 1s, visibility 1s;
+	transition: transform 0.65s, visibility 0.65s;
 }
 
 .hx-net.collapsed {
 	visibility: hidden;
-	transition: transform 1s, visibility 1s;
+	transition: transform 0.65s, visibility 0.65s;
 	transform: scale(0.1, 0.1);
 }
 
@@ -65,12 +65,12 @@
 	margin: 0;
 	background-color: rgba(102, 102, 103, 1);
 	z-index: +3;
-	transition: background-color 1s ease-out;
+	transition: background-color 0.65s ease-out;
 }
 
 .hx-net.collapsed .hx-mark {
 	background-color: rgba(102, 102, 103, 0);
-	transition: background-color 1s ease-in;
+	transition: background-color 0.65s ease-in;
 }
 
 .hx-link {
@@ -83,13 +83,13 @@
 	border: none;
 	margin: 0;
 	background-color: rgba(138, 141, 139, 1);
-	transition: background-color 1s ease-out;
+	transition: background-color 0.65s ease-out;
 	z-index: +2;
 }
 
 .hx-net.collapsed .hx-link {
 	background-color: rgba(138, 141, 139, 0);
-	transition: background-color 1s ease-in;
+	transition: background-color 0.65s ease-in;
 }
 
 .hx-block {
@@ -102,7 +102,7 @@
 	background: none;
 	visibility: visible;
 	transform: translate(-50%, -50%);
-	transition: visibility 1s;
+	transition: visibility 0.65s;
 	cursor: default;
 }
 
@@ -119,7 +119,7 @@
 
 .hx-block.collapsed {
 	visibility: hidden;
-	transition: visibility 1s;
+	transition: visibility 0.65s;
 }
 
 .hx-inner {
@@ -141,7 +141,7 @@
 	left: 0;
 	top: 0;
 	overflow: hidden;
-	transition: transform 1s;
+	transition: transform 0.65s;
 }
 
 .hx-block.collapsed .hx-inner-wrapper {
@@ -155,22 +155,22 @@
 .hx-block.small {
 	opacity: 1;
 	visibility: visible;
-	transition: visibility 1s, opacity 1s ease-out;
+	transition: visibility 0.65s, opacity 0.65s ease-out;
 }
 
 .hx-block.small.collapsed {
 	opacity: 0;
 	visibility: hidden;
-	transition: visibility 1s, opacity 1s ease-in;
+	transition: visibility 0.65s, opacity 0.65s ease-in;
 }
 
 .hx-block.big .hx-inner {
-	transition: background-color 1s ease-out;
+	transition: background-color 0.65s ease-out;
 	background-color: rgba(104, 218, 212, 1);
 }
 
 .hx-block.big.collapsed .hx-inner {
-	transition: background-color 1s ease-in;
+	transition: background-color 0.65s ease-in;
 	background-color: rgba(104, 218, 212, 0);
 }
 
@@ -206,7 +206,7 @@
 	left: 0;
 	width: 100%;
 	height: 200%;
-	transition: transform 1s;
+	transition: transform 0.65s;
 }
 
 .hx-slide-wrapper.slide-1 {
