@@ -5,7 +5,7 @@
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
 		Anchors: false,
-		WheelTimeDelta: 300 // ms
+		WheelTimeDelta: 400 // ms
 	};
 
 	function Link(elem) {
@@ -359,14 +359,16 @@
 
 		this.scroll = function(dir) {
 			var step = dir === "down" ? 1 : -1;
-			if(this.slide + step < 0 || this.slide + step > 4) return;
+			if(this.slide + step < 0 || this.slide + step > 5) return;
 			this.slide += step;
 			switch(this.slide) {
 				case 0:
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").addClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
-					this.el.find(".hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.small .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.big .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.center .hx-slide-wrapper").removeClass("slide-1");
 					this.stop();
 					break;
 
@@ -374,7 +376,9 @@
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
-					this.el.find(".hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.small .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.big .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.center .hx-slide-wrapper").removeClass("slide-1");
 					this.stop();
 					break;
 
@@ -382,7 +386,9 @@
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
-					this.el.find(".hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.small .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.big .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.center .hx-slide-wrapper").removeClass("slide-1");
 					this.start();
 					break;
 
@@ -390,7 +396,9 @@
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
-					this.el.find(".hx-slide-wrapper").addClass("slide-1");
+					this.el.find(".hx-block.small .hx-slide-wrapper").addClass("slide-1");
+					this.el.find(".hx-block.big .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.center .hx-slide-wrapper").removeClass("slide-1");
 					this.start();
 					break;
 
@@ -398,7 +406,19 @@
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").removeClass("collapsed");
-					this.el.find(".hx-slide-wrapper").addClass("slide-1");
+					this.el.find(".hx-block.small .hx-slide-wrapper").addClass("slide-1");
+					this.el.find(".hx-block.big .hx-slide-wrapper").removeClass("slide-1");
+					this.el.find(".hx-block.center .hx-slide-wrapper").removeClass("slide-1");
+					this.start();
+					break;
+
+				case 5:
+					this.el.find(".hx-net").removeClass("collapsed");
+					this.el.find(".hx-block.small").removeClass("collapsed");
+					this.el.find(".hx-block.big").removeClass("collapsed");
+					this.el.find(".hx-block.small .hx-slide-wrapper").addClass("slide-1");
+					this.el.find(".hx-block.big .hx-slide-wrapper").addClass("slide-1");
+					this.el.find(".hx-block.center .hx-slide-wrapper").addClass("slide-1");
 					this.start();
 			}
 		};
