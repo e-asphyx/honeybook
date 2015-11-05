@@ -433,13 +433,12 @@
 
 		this.wheelLog = [];
 		this.wheel = function(e) {
-			console.log(e);
 			if(!this.scrollLocked) {
 				return;
 			}
 			
-			var delta = e.originalEvent.deltaY !== undefined ? e.originalEvent.deltaY : e.originalEvent.wheelDeltaY;
-			var deltaX = e.originalEvent.deltaX !== undefined ? e.originalEvent.deltaX : e.originalEvent.wheelDeltaX;
+			var delta = e.originalEvent.deltaY !== undefined ? e.originalEvent.deltaY : -e.originalEvent.wheelDeltaY;
+			var deltaX = e.originalEvent.deltaX !== undefined ? e.originalEvent.deltaX : -e.originalEvent.wheelDeltaX;
 
 			e.preventDefault();
 			if(Math.abs(delta) <= Math.abs(deltaX)) return;
@@ -528,6 +527,7 @@
 		var wheelEvt = document.onwheel !== undefined ? "wheel" : "mousewheel";
 		this.el.on(wheelEvt, $.proxy(this.wheel, this));
 		this.lockScrolling();
+		window.addEventListener("wheel", function(e){console.log(e);});
 
 		this.update();
 		this.el.css("visibility", "visible");
