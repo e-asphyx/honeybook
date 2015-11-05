@@ -527,7 +527,6 @@
 		var wheelEvt = document.onwheel !== undefined ? "wheel" : "mousewheel";
 		this.el.on(wheelEvt, $.proxy(this.wheel, this));
 		this.lockScrolling();
-		window.addEventListener("wheel", function(e){console.log(e);});
 
 		this.update();
 		this.el.css("visibility", "visible");
