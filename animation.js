@@ -456,7 +456,7 @@
 			var deltaX = e.originalEvent.deltaX !== undefined ? e.originalEvent.deltaX : e.originalEvent.wheelDeltaX;
 
 			e.preventDefault();
-			if(Math.abs(delta) <= Math.abs(deltaX)) return;
+			//if(Math.abs(delta) <= Math.abs(deltaX)) return;
 			this.wheelLog.push(delta);
 
 			if(this.filterBuf.length == 15) {
