@@ -229,21 +229,6 @@
 		this.slide = 0;
 
 		this.update = function() {
-			var sz;
-			var vmin;
-			if($(window).width() > $(window).height()) {
-				vmin = $(window).height();
-				sz = vmin * 0.95;
-			} else {
-				vmin = $(window).width();
-				sz = vmin * 0.95 * Math.sqrt(3) / 2;
-			}
-			/*
-			this.el.height(vmin);
-			this.el.css("font-size", vmin * 0.05 + "px");
-			this.baseEl.height(sz).width(sz);
-			*/
-
 			for(var i = 0; i < this.nodes.length; i++) {
 				this.nodes[i].update();
 			}
@@ -378,6 +363,7 @@
 					break;
 
 				case 1:
+					this.update();
 					this.el.removeClass("collapsed");
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
@@ -447,8 +433,8 @@
 
 		this.wheelLog = [];
 		this.wheel = function(e) {
+			console.log(e);
 			if(!this.scrollLocked) {
-				//console.log($(window).scrollTop());
 				return;
 			}
 			
@@ -456,7 +442,7 @@
 			var deltaX = e.originalEvent.deltaX !== undefined ? e.originalEvent.deltaX : e.originalEvent.wheelDeltaX;
 
 			e.preventDefault();
-			//if(Math.abs(delta) <= Math.abs(deltaX)) return;
+			if(Math.abs(delta) <= Math.abs(deltaX)) return;
 			this.wheelLog.push(delta);
 
 			if(this.filterBuf.length == 15) {
