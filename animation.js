@@ -204,6 +204,7 @@
 		this.running = false;
 		this.el = $(elem);
 		this.baseEl = this.el.find(".hx-base");
+		this.scrollLocked = false;
 
 		var links = this.el.find(".hx-link");
 		this.links = [];
@@ -237,8 +238,11 @@
 				vmin = $(window).width();
 				sz = vmin * 0.95 * Math.sqrt(3) / 2;
 			}
-			this.baseEl.height(sz).width(sz);
+			/*
+			this.el.height(vmin);
 			this.el.css("font-size", vmin * 0.05 + "px");
+			this.baseEl.height(sz).width(sz);
+			*/
 
 			for(var i = 0; i < this.nodes.length; i++) {
 				this.nodes[i].update();
@@ -363,6 +367,7 @@
 			this.slide += step;
 			switch(this.slide) {
 				case 0:
+					this.el.addClass("collapsed");
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").addClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
@@ -373,6 +378,7 @@
 					break;
 
 				case 1:
+					this.el.removeClass("collapsed");
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
@@ -383,6 +389,7 @@
 					break;
 
 				case 2:
+					this.el.removeClass("collapsed");
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
@@ -393,6 +400,7 @@
 					break;
 
 				case 3:
+					this.el.removeClass("collapsed");
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").addClass("collapsed");
@@ -403,6 +411,7 @@
 					break;
 
 				case 4:
+					this.el.removeClass("collapsed");
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").removeClass("collapsed");
@@ -413,6 +422,7 @@
 					break;
 
 				case 5:
+					this.el.removeClass("collapsed");
 					this.el.find(".hx-net").removeClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
 					this.el.find(".hx-block.big").removeClass("collapsed");
@@ -436,6 +446,11 @@
 		}
 
 		this.wheel = function(e) {
+			if(!this.scrollLocked) {
+				//console.log($(window).scrollTop());
+				return;
+			}
+
 			e.preventDefault();
 			if(Math.abs(e.originalEvent.deltaY) <= Math.abs(e.originalEvent.deltaX)) return;
 			var delta = e.originalEvent.deltaY;
@@ -509,8 +524,17 @@
 			this.update();
 		};
 
+		this.lockScrolling = function() {
+			this.scrollLocked = true;
+		};
+
+		this.unlockScrolling = function() {
+			this.scrollLocked = false;
+		};
+
 		$(window).resize($.proxy(this.update, this));
-		$(window).on("wheel", $.proxy(this.wheel, this));
+		this.el.on("wheel", $.proxy(this.wheel, this));
+		this.lockScrolling();
 
 		this.update();
 		this.el.css("visibility", "visible");
