@@ -451,10 +451,12 @@
 				//console.log($(window).scrollTop());
 				return;
 			}
+			
+			var delta = e.originalEvent.wheelDeltaY !== undefined ? e.originalEvent.wheelDeltaY : e.originalEvent.deltaY;
+			var deltaX = e.originalEvent.wheelDeltaX !== undefined ? e.originalEvent.wheelDeltaX : e.originalEvent.deltaX;
 
 			e.preventDefault();
-			if(Math.abs(e.originalEvent.deltaY) <= Math.abs(e.originalEvent.deltaX)) return;
-			var delta = e.originalEvent.deltaY;
+			if(Math.abs(delta) <= Math.abs(deltaX)) return;
 			this.wheelLog.push(delta);
 
 			if(this.filterBuf.length == 15) {
@@ -536,7 +538,9 @@
 		};
 
 		$(window).resize($.proxy(this.update, this));
-		this.el.on("wheel", $.proxy(this.wheel, this));
+
+		var wheelEvt = document.onwheel !== undefined ? "wheel" ? "mousewheel";
+		this.el.on(wheelEvt, $.proxy(this.wheel, this));
 		this.lockScrolling();
 
 		this.update();
