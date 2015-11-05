@@ -445,6 +445,7 @@
 			return sum / array.length;
 		}
 
+		this.wheelLog = [];
 		this.wheel = function(e) {
 			if(!this.scrollLocked) {
 				//console.log($(window).scrollTop());
@@ -454,6 +455,8 @@
 			e.preventDefault();
 			if(Math.abs(e.originalEvent.deltaY) <= Math.abs(e.originalEvent.deltaX)) return;
 			var delta = e.originalEvent.deltaY;
+			this.wheelLog.push(delta);
+
 			if(this.filterBuf.length == 15) {
 				this.filterBuf.shift();
 			}
