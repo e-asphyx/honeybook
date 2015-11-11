@@ -1,12 +1,8 @@
 /* Detete this piece */
 
 body {
-	background-color: gray;
-}
-
-div.testFiller {
-	width: 100%;
-	height: 1500px;
+	background-color: #eeeeee;
+	margin: 0;
 }
 
 /* ------------------------------------------------------------------- */
@@ -24,13 +20,13 @@ div.testFiller {
 	box-sizing: border-box;
 	font-family: "ProximaNova", sans-serif;
 	font-weight: normal;
-	font-size: 5vmin;
+	font-size: 4.47vmin;
 	text-rendering: geometricPrecision;
 	transition: height 0.65s;
 }
 
 .hx-page.collapsed {
-	height: 63.85vmin;
+	height: 57.13vmin;
 }
 
 /* Acts as coordinate grid */
@@ -40,8 +36,8 @@ div.testFiller {
 	left: 50%;
 	width: 665px;
 	height: 665px;
-	height: 95vmin;
-	width: 95vmin;
+	height: 85vmin;
+	width: 85vmin;
 	background: none;
 	margin: 0;
 	transform: translate(-50%, -50%);
@@ -343,4 +339,95 @@ div.testFiller {
 	font-size: 1.3em;
 	font-weight: bold;
 	transform: translateY(-50%);
+}
+
+ol.hx-indicators {
+	position: absolute;
+	width: 100%;
+	bottom: 4%;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 15px;
+	transform: translateY(50%);
+	transition: bottom 0.65s;
+	cursor: default;
+}
+
+.hx-page.collapsed ol.hx-indicators {
+	bottom: 7%;
+}
+
+ol.hx-indicators > li {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	background-color: black;
+	border: 0;
+	border-radius: 50%;
+	margin: 1px;
+	padding: 0;
+	cursor: pointer;
+	background-color: #eeeeee;
+	transition: background-color 0.3s;
+}
+
+ol.hx-indicators > li.active {
+	width: 12px;
+	height: 12px;
+	margin: 0;
+	background-color: rgb(153, 153, 153);
+}
+
+.hx-nav-box {
+	position: absolute;
+	height: 100%;
+	width: 200px;
+	background: none;
+}
+
+.hx-nav-box.prev {
+	left: 0;
+}
+
+.hx-nav-box.next {
+	right: 0;
+}
+
+.hx-nav-icon {
+	position: absolute;
+	display: block;
+	top: 50%;
+	font-family: 'iconbasic';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+	transform: translateY(-50%);
+	color: #eeeeee;
+	transition: color 0.3s;
+}
+
+.hx-nav-box:hover .hx-nav-icon {
+	color: rgb(153, 153, 153);
+}
+
+.hx-nav-box.prev .hx-nav-icon {
+	left: 20px;
+}
+
+.hx-nav-box.prev .hx-nav-icon::before {
+	content: "\e657";
+}
+
+.hx-nav-box.next .hx-nav-icon {
+	right: 20px;
+}
+
+.hx-nav-box.next .hx-nav-icon::before {
+	content: "\e659";
 }

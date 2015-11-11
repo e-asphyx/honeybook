@@ -5,7 +5,8 @@
 		Fric: 0.9, // smaller value means faster slowdown
 		Interval: 40, // ms
 		Anchors: false,
-		WheelTimeDelta: 400 // ms
+		WheelTimeDelta: 400, // ms
+		Wheel: false
 	};
 
 	function Link(elem) {
@@ -346,11 +347,16 @@
 			this.updateTimer();
 		};
 
-		this.scroll = function(dir) {
-			var step = dir === "down" ? 1 : -1;
-			if(this.slide + step < 0 || this.slide + step > 5) return;
-			this.slide += step;
-			switch(this.slide) {
+		this.showSlide = function(slide) {
+			if(slide < 0 || slide > 5 || slide == this.slide) return;
+			
+			this.update();
+
+			var ind = this.el.find(".hx-indicators");
+			ind.find("[data-slide!='" + slide + "']").removeClass("active");
+			ind.find("[data-slide='" + slide + "']").addClass("active");
+
+			switch(slide) {
 				case 0:
 					this.el.addClass("collapsed");
 					this.el.find(".hx-net").addClass("collapsed");
@@ -363,7 +369,6 @@
 					break;
 
 				case 1:
-					this.update();
 					this.el.removeClass("collapsed");
 					this.el.find(".hx-net").addClass("collapsed");
 					this.el.find(".hx-block.small").removeClass("collapsed");
@@ -417,6 +422,12 @@
 					this.el.find(".hx-block.center .hx-slide-wrapper").addClass("slide-1");
 					this.start();
 			}
+			this.slide = slide;
+		};
+
+		this.scroll = function(dir) {
+			var step = (dir === "down" || dir === "next") ? 1 : -1;
+			this.showSlide(this.slide + step);
 		};
 
 		this.wheelTimeStamp = 0;
@@ -522,11 +533,27 @@
 			this.scrollLocked = false;
 		};
 
+		this.indicatorsClick = function(e) {
+			var id = $(e.target).data("slide");
+			if(id !== undefined) {
+				this.showSlide(parseInt(id));
+			}
+		};
+
+		this.navClick = function(e) {
+			this.scroll($(e.currentTarget).hasClass("next") ? "next" : "prev");
+		};
+
+		this.el.find(".hx-indicators").click($.proxy(this.indicatorsClick, this));
+		this.el.find(".hx-nav-box").click($.proxy(this.navClick, this));
+
 		$(window).resize($.proxy(this.update, this));
 
-		var wheelEvt = document.onwheel !== undefined ? "wheel" : "mousewheel";
-		this.el.on(wheelEvt, $.proxy(this.wheel, this));
-		this.lockScrolling();
+		if(Phy.Wheel) {
+			var wheelEvt = document.onwheel !== undefined ? "wheel" : "mousewheel";
+			this.el.on(wheelEvt, $.proxy(this.wheel, this));
+			this.lockScrolling();
+		}
 
 		this.update();
 		this.el.css("visibility", "visible");
