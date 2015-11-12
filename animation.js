@@ -245,7 +245,8 @@
 		}
 
 		this.mousedown = function(e) {
-			if($(e.target).hasClass("hx-block")) return;
+			if($(e.target).hasClass("hx-block") ||
+				$(e.target).hasClass("hx-inner-wrapper")) return;
 
 			var nodeId = parseInt($(e.currentTarget).data("node-id"));
 			var node = findNode(this.nodes, nodeId);
