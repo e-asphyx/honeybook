@@ -6,7 +6,7 @@
 		Interval: 40, // ms
 		Anchors: false,
 		WheelTimeDelta: 400, // ms
-		Wheel: false
+		Wheel: true
 	};
 
 	function Link(elem) {
